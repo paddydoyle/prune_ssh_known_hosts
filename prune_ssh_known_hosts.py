@@ -42,7 +42,7 @@ def main():
             filename = '.ssh/known_hosts'
 
     try:
-        f = open(filename, 'r')
+        hostsfile = open(filename, 'r')
     except IOError, reason:
         print "Could not open hostsfile: %s" % (str(reason))
         return None
@@ -53,16 +53,16 @@ def main():
     # to be able to count line numbers
     lineno = 0
 
-    for fline in f:
+    for fline in hostsfile:
         fline = fline.strip()
 
         # always increment, need to count comment lines as well
         lineno += 1
 
         # strip blank and comment lines
-        if re.match('^$',fline):
+        if re.match(r'^$', fline):
             continue
-        elif re.match('^\s*#',fline):
+        elif re.match(r'^\s*#', fline):
             continue
 
         # record line numbers, and append duplicate lines
@@ -74,7 +74,7 @@ def main():
         # split based on whitespace
         # typical line:
         # 10.2.3.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA4VyLBb......
-        (host, key_type, key) = fline.split()
+        (host, _, _) = fline.split()
 
         # what kind of host entry? we can have:
         # - short or long hostname
@@ -101,7 +101,7 @@ def main():
         if not res:
             non_resolving_hosts[host] = lineno
 
-    f.close()
+    hostsfile.close()
 
     # print the requested reports
 
@@ -145,9 +145,9 @@ def print_duplicates(all_entries, filename):
             for lineno in linenos[1:]:
 
                 if args.split_sed:
-                    print "sed '%ds/^\(.*\)/##  \\1/' %s" % (lineno, filename)
+                    print r"sed '%ds/^\(.*\)/##  \\1/' %s" % (lineno, filename)
                 else:
-                    sed_str += " -e '%ds/^\(.*\)/##  \\1/'" % (lineno)
+                    sed_str += r" -e '%ds/^\(.*\)/##  \\1/'" % (lineno)
 
     # did we get anything?
     if sed_str and not args.split_sed:
@@ -168,9 +168,9 @@ def print_non_resolving(non_resolving_hosts, filename):
         lineno = non_resolving_hosts[host]
 
         if args.split_sed:
-            print "sed '%ds/^\(.*\)/##  \\1/' %s" % (lineno, filename)
+            print r"sed '%ds/^\(.*\)/##  \\1/' %s" % (lineno, filename)
         else:
-            sed_str += " -e '%ds/^\(.*\)/##  \\1/'" % (lineno)
+            sed_str += r" -e '%ds/^\(.*\)/##  \\1/'" % (lineno)
 
     # did we get anything?
     if sed_str and not args.split_sed:
@@ -189,11 +189,13 @@ if __name__ == '__main__':
     # options
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
-    parser.add_argument("-f", "--hostsfile", help="filename to parse (defaults to $HOME/.ssh/known_hosts)",
+    parser.add_argument("-f", "--hostsfile",
+                        help="filename to parse (defaults to $HOME/.ssh/known_hosts)",
                         type=str)
     parser.add_argument("-d", "--duplicates", help="print 'sed' lines to remove duplicates",
                         action="store_true")
-    parser.add_argument("-r", "--non_resolving", help="print 'sed' lines to remove non-resolving hosts",
+    parser.add_argument("-r", "--non_resolving",
+                        help="print 'sed' lines to remove non-resolving hosts",
                         action="store_true")
     parser.add_argument("-s", "--split_sed", help="split the 'sed' edits into individual lines",
                         action="store_true")
