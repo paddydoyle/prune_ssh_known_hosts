@@ -56,10 +56,12 @@ def main():
         # Always increment, need to count comment lines as well
         lineno += 1
 
-        # Ignore blank and comment lines
+        # Ignore blank and comment lines, and any lines starting with markers
         if re.match(r'^$', fline):
             continue
         elif re.match(r'^\s*#', fline):
+            continue
+        elif not re.match(r'^\s*\w', fline):
             continue
 
         # Record line numbers, and append duplicate lines
