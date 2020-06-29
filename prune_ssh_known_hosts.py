@@ -115,7 +115,7 @@ def main():
 def resolve_hostname(hostname):
     """DNS lookup: hostname to IP address."""
     try:
-        resolved_ip = socket.gethostbyname(hostname)
+        _ = socket.gethostbyname(hostname)
         return True
     except socket.error:
         return False
@@ -124,7 +124,7 @@ def resolve_hostname(hostname):
 def resolve_ipaddr(ipaddr):
     """DNS lookup: IP address to hostname."""
     try:
-        resolved_host = socket.gethostbyaddr(ipaddr)
+        _ = socket.gethostbyaddr(ipaddr)
         return True
     except socket.error:
         return False
