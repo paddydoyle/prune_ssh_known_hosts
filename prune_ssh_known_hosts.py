@@ -25,9 +25,6 @@ import socket
 ##############################################################################
 
 
-####################################################
-# main
-####################################################
 def main():
 
     all_entries = {} # for duplicates
@@ -50,33 +47,33 @@ def main():
     if args.verbose:
         print "# Reading hostsfile %s" % (filename)
 
-    # to be able to count line numbers
+    # To be able to count line numbers
     lineno = 0
 
     for fline in hostsfile:
         fline = fline.strip()
 
-        # always increment, need to count comment lines as well
+        # Always increment, need to count comment lines as well
         lineno += 1
 
-        # strip blank and comment lines
+        # Ignore blank and comment lines
         if re.match(r'^$', fline):
             continue
         elif re.match(r'^\s*#', fline):
             continue
 
-        # record line numbers, and append duplicate lines
+        # Record line numbers, and append duplicate lines
         if fline in all_entries:
             all_entries[fline].append(lineno)
         else:
             all_entries[fline] = [lineno]
 
-        # split based on whitespace
+        # Split based on whitespace
         # typical line:
         # 10.2.3.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA4VyLBb......
         (host, _, _) = fline.split()
 
-        # what kind of host entry? we can have:
+        # What kind of host entry? we can have:
         # - short or long hostname
         # - ip address
         # - short or long hostname,ip address
@@ -103,7 +100,7 @@ def main():
 
     hostsfile.close()
 
-    # print the requested reports
+    # Print the requested reports
 
     if args.duplicates:
         print_duplicates(all_entries, filename)
@@ -149,7 +146,6 @@ def print_duplicates(all_entries, filename):
                 else:
                     sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
 
-    # did we get anything?
     if sed_str and not args.split_sed:
         print "\nsed %s %s" % (sed_str, filename)
 
@@ -172,16 +168,11 @@ def print_non_resolving(non_resolving_hosts, filename):
         else:
             sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
 
-    # did we get anything?
     if sed_str and not args.split_sed:
         print "\nsed %s %s" % (sed_str, filename)
 
 
 if __name__ == '__main__':
-
-    ####################################################
-    # read the filenames from cmd-line
-    ####################################################
 
     # don't you just love argparse!!
     parser = argparse.ArgumentParser()
@@ -201,9 +192,6 @@ if __name__ == '__main__':
                         action="store_true")
     args = parser.parse_args()
 
-    ####################################################
-    # call main
-    ####################################################
     main()
 
 
