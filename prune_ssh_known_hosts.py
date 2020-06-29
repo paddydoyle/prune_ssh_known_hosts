@@ -18,6 +18,7 @@ For matched entries, print a 'sed' command to comment out that line. It's
 not a 'sed -i' line; that can be manually added!
 """
 
+from __future__ import print_function
 import argparse
 import os
 import re
@@ -41,11 +42,11 @@ def main():
     try:
         hostsfile = open(filename, 'r')
     except IOError, reason:
-        print "Could not open hostsfile: %s" % (str(reason))
+        print("Could not open hostsfile: {}".format(reason))
         return None
 
     if args.verbose:
-        print "# Reading hostsfile %s" % (filename)
+        print("# Reading hostsfile {}".format(filename))
 
     # To be able to count line numbers
     lineno = 0
@@ -134,24 +135,24 @@ def print_duplicates(all_entries, filename):
     sed_str = ''
 
     if args.verbose:
-        print "\n# Duplicate entries:"
+        print("\n# Duplicate entries:")
 
     for fline in all_entries:
         linenos = all_entries[fline]
 
         if len(linenos) > 1:
             if args.verbose:
-                print "#   %s: %s" % (fline, linenos)
+                print("#   {}: {}".format(fline, linenos))
             # skip the first entry, duplicates follow it
             for lineno in linenos[1:]:
 
                 if args.split_sed:
-                    print r"sed '%ds/^\(.*\)/##  \1/' %s" "\n" % (lineno, filename)
+                    print(r"sed '{}s/^\(.*\)/##  \1/' {}" "\n".format(lineno, filename))
                 else:
-                    sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
+                    sed_str += r" -e '{}s/^\(.*\)/##  \1/'".format(lineno)
 
     if sed_str and not args.split_sed:
-        print "\nsed %s %s" % (sed_str, filename)
+        print("\nsed {} {}".format(sed_str, filename))
 
 
 def print_non_resolving(non_resolving_hosts, filename):
@@ -159,21 +160,21 @@ def print_non_resolving(non_resolving_hosts, filename):
     sed_str = ''
 
     if args.verbose:
-        print "\n# Non-resolving entries:"
+        print("\n# Non-resolving entries:")
 
     for host in non_resolving_hosts:
         if args.verbose:
-            print "#   %s" % (host)
+            print("#   {}".format(host))
 
         lineno = non_resolving_hosts[host]
 
         if args.split_sed:
-            print r"sed '%ds/^\(.*\)/##  \1/' %s" "\n" % (lineno, filename)
+            print(r"sed '{}s/^\(.*\)/##  \1/' {}" "\n".format(lineno, filename))
         else:
-            sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
+            sed_str += r" -e '{}s/^\(.*\)/##  \1/'".format(lineno)
 
     if sed_str and not args.split_sed:
-        print "\nsed %s %s" % (sed_str, filename)
+        print("\nsed {} {}".format(sed_str, filename))
 
 
 if __name__ == '__main__':
