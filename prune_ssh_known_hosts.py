@@ -133,25 +133,25 @@ def print_duplicates(all_entries, filename):
     sed_str = ''
 
     if args.verbose:
-        print "# Duplicate entries:"
+        print "\n# Duplicate entries:"
 
     for fline in all_entries:
         linenos = all_entries[fline]
 
         if len(linenos) > 1:
-            if args.verbose and args.split_sed:
-                print "# Duplicate entry: %s: %s" % (fline, linenos)
+            if args.verbose:
+                print "#   %s: %s" % (fline, linenos)
             # skip the first entry, duplicates follow it
             for lineno in linenos[1:]:
 
                 if args.split_sed:
-                    print r"sed '%ds/^\(.*\)/##  \1/' %s" % (lineno, filename)
+                    print r"sed '%ds/^\(.*\)/##  \1/' %s" "\n" % (lineno, filename)
                 else:
                     sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
 
     # did we get anything?
     if sed_str and not args.split_sed:
-        print "sed %s %s" % (sed_str, filename)
+        print "\nsed %s %s" % (sed_str, filename)
 
 
 # report loop: non-resolving hosts/IPs
@@ -159,22 +159,22 @@ def print_non_resolving(non_resolving_hosts, filename):
     sed_str = ''
 
     if args.verbose:
-        print "# Non-resolving entries:"
+        print "\n# Non-resolving entries:"
 
     for host in non_resolving_hosts:
-        if args.verbose and args.split_sed:
-            print "# Issue: doesn't resolve: %s" % (host)
+        if args.verbose:
+            print "#   %s" % (host)
 
         lineno = non_resolving_hosts[host]
 
         if args.split_sed:
-            print r"sed '%ds/^\(.*\)/##  \1/' %s" % (lineno, filename)
+            print r"sed '%ds/^\(.*\)/##  \1/' %s" "\n" % (lineno, filename)
         else:
             sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
 
     # did we get anything?
     if sed_str and not args.split_sed:
-        print "sed %s %s" % (sed_str, filename)
+        print "\nsed %s %s" % (sed_str, filename)
 
 
 if __name__ == '__main__':
