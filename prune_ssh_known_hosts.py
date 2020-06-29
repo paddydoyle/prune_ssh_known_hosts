@@ -1,31 +1,31 @@
 #!/usr/bin/env python
 
+"""
+prune_ssh_known_hosts
+
+Parse ~/.ssh/known_hosts and attempt to identify old entries which
+can be pruned.
+
+Criteria:
+- duplicate entry -> definite candidate
+- hostname no longer resolves -> definite candidate
+- hostname/IP address not pingable -> possible candidate (could be just
+  down) [TODO]
+- host key does not match -> possible candidate (host since reinstalled,
+  but be careful!) [TODO]
+
+For matched entries, print a 'sed' command to comment out that line. It's
+not a 'sed -i' line; that can be manually added!
+"""
+
 import argparse
 import os
 import re
 import socket
 
 
-##############################################################################
-# prune_ssh_known_hosts
-# 2018-12-06 paddy@tchpc.tcd.ie
-#
-# Parse ~/.ssh/known_hosts and attempt to identify old entries which
-# can be pruned.
-#
-# Criteria:
-# - hostname no longer resolves -> definite candidate
-# - hostname/IP address not pingable -> possible candidate (could be just
-#   down)
-# - host key does not match -> possible candidate (host since reinstalled,
-#   but be careful!) [TODO]
-#
-# For matched entries, print a 'sed' command to comment out that line. It's
-# not a 'sed -i' line; that can be manually added!
-##############################################################################
-
-
 def main():
+    """Open the file and find entries according to the given criteria."""
 
     all_entries = {} # for duplicates
     non_resolving_hosts = {} # for hosts/IPs which don't resolve
@@ -112,6 +112,7 @@ def main():
 
 
 def resolve_hostname(hostname):
+    """DNS lookup: hostname to IP address."""
     try:
         resolved_ip = socket.gethostbyname(hostname)
         return True
@@ -120,6 +121,7 @@ def resolve_hostname(hostname):
 
 
 def resolve_ipaddr(ipaddr):
+    """DNS lookup: IP address to hostname."""
     try:
         resolved_host = socket.gethostbyaddr(ipaddr)
         return True
@@ -127,8 +129,8 @@ def resolve_ipaddr(ipaddr):
         return False
 
 
-# report loop: duplicate lines
 def print_duplicates(all_entries, filename):
+    """Report duplicate entries and print 'sed' lines to remove them."""
     sed_str = ''
 
     if args.verbose:
@@ -152,8 +154,8 @@ def print_duplicates(all_entries, filename):
         print "\nsed %s %s" % (sed_str, filename)
 
 
-# report loop: non-resolving hosts/IPs
 def print_non_resolving(non_resolving_hosts, filename):
+    """Report non-resolving hostnames/IP addresses and print 'sed' lines to remove them."""
     sed_str = ''
 
     if args.verbose:
