@@ -145,9 +145,9 @@ def print_duplicates(all_entries, filename):
             for lineno in linenos[1:]:
 
                 if args.split_sed:
-                    print r"sed '%ds/^\(.*\)/##  \\1/' %s" % (lineno, filename)
+                    print r"sed '%ds/^\(.*\)/##  \1/' %s" % (lineno, filename)
                 else:
-                    sed_str += r" -e '%ds/^\(.*\)/##  \\1/'" % (lineno)
+                    sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
 
     # did we get anything?
     if sed_str and not args.split_sed:
@@ -168,9 +168,9 @@ def print_non_resolving(non_resolving_hosts, filename):
         lineno = non_resolving_hosts[host]
 
         if args.split_sed:
-            print r"sed '%ds/^\(.*\)/##  \\1/' %s" % (lineno, filename)
+            print r"sed '%ds/^\(.*\)/##  \1/' %s" % (lineno, filename)
         else:
-            sed_str += r" -e '%ds/^\(.*\)/##  \\1/'" % (lineno)
+            sed_str += r" -e '%ds/^\(.*\)/##  \1/'" % (lineno)
 
     # did we get anything?
     if sed_str and not args.split_sed:
